@@ -22,6 +22,8 @@ class WandyBotClass:
     user_admin_accessing_true = 0
     admin_access = 0
     user_admin_in_progress = 0
+    random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
+    rolling_dice = 0
 
 class WandyWeatherBotClass:
     @staticmethod
@@ -45,9 +47,9 @@ def get_weather(city):
 
         embed=discord.Embed(title=f"{city}"' Weather', description=f"{country}", color=0x14aaeb)
         embed.add_field(name="Temprature C°", value=f"{celcius}", inline=True)
-        # embed.add_field(name="Temprature F°", value=f"{fahrenheit}", inline=True)
+        embed.add_field(name="Temprature F°", value=f"{fahrenheit}", inline=True)
         embed.add_field(name="Wind Condition", value=f"{wcond}", inline=False)
-        # embed.add_field(name="Feels Like F°", value=f"{fflike}", inline=True)
+        embed.add_field(name="Feels Like F°", value=f"{fflike}", inline=True)
         embed.add_field(name="Feels Like C°", value=f"{fclike}", inline=True)
         embed.set_footer(text='Time: 'f"{time}")
 
@@ -171,6 +173,15 @@ async def handle_notess(message):
         await message.channel.send('Your password is incorrect')
     WandyBotClass.user_admin_in_progress = 0
 
+async def handle_roll_dice(message):
+    await message.channel.send('Rolling the dice...')
+    WandyBotClass.rolling_dice = 1
+
+async def handle_dice_roll_results(message):
+    await message.channel.send('The result was: ' + random.choice(WandyBotClass.random_dice) + '')
+
+
+
 
 # async def handle_admin_accessing_true(message):
     # if message.content.startswith('wb notes'):
@@ -227,11 +238,8 @@ async def on_message(message):
     elif WandyBotClass.user_admin_in_progress == 1:
         await handle_notess(message)
 
-    # elif WandyBotClass.playing_true == 1:
-        # await handle_playing_true(message)
-
-    # elif WandyBotClass.user_admin_accessing_true == 1:
-        # await handle_admin_accessing_true(message)
+    elif WandyBotClass.rolling_dice == 1:
+        await handle_dice_roll_results(message)
 
     elif message.content.startswith('wb open letter'):
         await handle_open_letter(message)
@@ -271,6 +279,9 @@ async def on_message(message):
         city = message.content[slice(11, len(message.content))].lower()
         result = get_weather(city)
         await message.channel.send(embed=result)
+
+    elif message.content.startswith('wb roll dice'):
+        await handle_roll_dice(message)
 
     elif message.content.startswith('wb'):
         await message.channel.send('Not a command')
