@@ -45,9 +45,9 @@ def get_weather(city):
 
         embed=discord.Embed(title=f"{city}"' Weather', description=f"{country}", color=0x14aaeb)
         embed.add_field(name="Temprature C°", value=f"{celcius}", inline=True)
-        embed.add_field(name="Temprature F°", value=f"{fahrenheit}", inline=True)
+        # embed.add_field(name="Temprature F°", value=f"{fahrenheit}", inline=True)
         embed.add_field(name="Wind Condition", value=f"{wcond}", inline=False)
-        embed.add_field(name="Feels Like F°", value=f"{fflike}", inline=True)
+        # embed.add_field(name="Feels Like F°", value=f"{fflike}", inline=True)
         embed.add_field(name="Feels Like C°", value=f"{fclike}", inline=True)
         embed.set_footer(text='Time: 'f"{time}")
 
