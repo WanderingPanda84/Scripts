@@ -23,7 +23,7 @@ class WandyBotClass:
     admin_access = 0
     user_admin_in_progress = 0
     random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
-    rolling_dice = 0
+    # rolling_dice = 0
 
 class WandyWeatherBotClass:
     @staticmethod
@@ -92,7 +92,7 @@ async def handle_answers(message):
 
 
 async def handle_help(message):
-    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in). For more information about each command, run the command wb Help link')
+    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in) , wb roll dice. For more information about each command, run the command wb Help link')
 
 
 async def handle_stickers_count(message):
@@ -130,24 +130,42 @@ async def handle_playing_true(message):
         await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
         WandyBotClass.sticker_count += 1
     
+    else:
+        if message.content.startswith(''):
+            await message.channel.send('You were not correct :(')
+
     if message.content.startswith('play'):
         await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
         WandyBotClass.sticker_count += 1
-    
+
+    else:
+        if message.content.startswith(''):
+            await message.channel.send('You were not correct :(')
+
     if message.content.startswith('sun'):
         await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
         WandyBotClass.sticker_count += 1
 
+    else:
+        if message.content.startswith(''):
+            await message.channel.send('You were not correct :(')
+
     if message.content.startswith('pretty'):
         await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
     
-    elif message.content.startswith(''):
-        await message.channel.send('You were not correct :(')
+    else:
+        if message.content.startswith(''):
+            await message.channel.send('You were not correct :(')
         
         WandyBotClass.sticker_count += 1
 
     if message.content.startswith('cry'):
         await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+        
+    else:
+        if message.content.startswith(''):
+            await message.channel.send('You were not correct :(')
+
         WandyBotClass.sticker_count += 1
     WandyBotClass.playing_true = 0
 
@@ -175,11 +193,11 @@ async def handle_notess(message):
 
 async def handle_roll_dice(message):
     await message.channel.send('Rolling the dice...')
-    WandyBotClass.rolling_dice = 1
-
-async def handle_dice_roll_results(message):
     await message.channel.send('The result was: ' + random.choice(WandyBotClass.random_dice) + '')
+    # WandyBotClass.rolling_dice = 1
 
+# async def handle_dice_roll_results(message):
+#     WandyBotClass.rolling_dice = 0
 
 
 
@@ -238,8 +256,11 @@ async def on_message(message):
     elif WandyBotClass.user_admin_in_progress == 1:
         await handle_notess(message)
 
-    elif WandyBotClass.rolling_dice == 1:
-        await handle_dice_roll_results(message)
+    elif WandyBotClass.playing_true == 1:
+        await handle_playing_true(message)
+
+    # elif WandyBotClass.rolling_dice == 1:
+    #     await handle_dice_roll_results(message)
 
     elif message.content.startswith('wb open letter'):
         await handle_open_letter(message)
