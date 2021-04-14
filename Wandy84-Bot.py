@@ -24,6 +24,7 @@ class WandyBotClass:
     user_admin_in_progress = 0
     random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
     # rolling_dice = 0
+    chosen_word = ''
 
 class WandyWeatherBotClass:
     @staticmethod
@@ -121,52 +122,52 @@ async def handle_nick_answer(message):
 
 
 async def handle_play(message):
-    await message.channel.send('Unscramble the following word: ' + random.choice(WandyBotClass.play_words) + ' type in chat the answer and see if you were correct!')
+    WandyBotClass.chosen_word = random.choice(WandyBotClass.play_words)
+
+    await message.channel.send('Unscramble the following word: ' + WandyBotClass.chosen_word + ' type in chat the answer and see if you were correct!')
     WandyBotClass.playing_true = 1
 
 
 async def handle_playing_true(message):
-    if message.content.startswith('hello'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
+
+    if WandyBotClass.chosen_word == 'lheol':
+        if message.content.startswith('hello'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+        else:
+            await message.channel.send('You were not correct :(')
+
+    if WandyBotClass.chosen_word == 'lapy':
+        if message.content.startswith('play'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+
+        else:
+            await message.channel.send('You were not correct :(')
+
+    if WandyBotClass.chosen_word == 'nsu':
+        if message.content.startswith('sun'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+
+    else:
+        await message.channel.send('You were not correct :(')
     
-    else:
-        if message.content.startswith(''):
-            await message.channel.send('You were not correct :(')
-
-    if message.content.startswith('play'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
-
-    else:
-        if message.content.startswith(''):
-            await message.channel.send('You were not correct :(')
-
-    if message.content.startswith('sun'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
-
-    else:
-        if message.content.startswith(''):
-            await message.channel.send('You were not correct :(')
-
-    if message.content.startswith('pretty'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
     
+    if WandyBotClass.chosen_word == 'prttey':
+        if message.content.startswith('pretty'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
     else:
-        if message.content.startswith(''):
             await message.channel.send('You were not correct :(')
-        
-        WandyBotClass.sticker_count += 1
-
-    if message.content.startswith('cry'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        
+    
+    if WandyBotClass.chosen_word == 'ycr':
+        if message.content.startswith('cry'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
     else:
-        if message.content.startswith(''):
             await message.channel.send('You were not correct :(')
 
-        WandyBotClass.sticker_count += 1
     WandyBotClass.playing_true = 0
 
 
