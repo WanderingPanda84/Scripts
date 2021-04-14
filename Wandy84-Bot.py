@@ -150,22 +150,22 @@ async def handle_playing_true(message):
             await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
             WandyBotClass.sticker_count += 1
 
-    else:
-        await message.channel.send('You were not correct :(')
+        else:
+            await message.channel.send('You were not correct :(')
     
     
     if WandyBotClass.chosen_word == 'prttey':
         if message.content.startswith('pretty'):
             await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
             WandyBotClass.sticker_count += 1
-    else:
+        else:
             await message.channel.send('You were not correct :(')
     
     if WandyBotClass.chosen_word == 'ycr':
         if message.content.startswith('cry'):
             await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
             WandyBotClass.sticker_count += 1
-    else:
+        else:
             await message.channel.send('You were not correct :(')
 
     WandyBotClass.playing_true = 0
