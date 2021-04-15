@@ -22,11 +22,15 @@ class WandyBotClass:
     user_admin_accessing_true = 0
     admin_access = 0
     user_admin_in_progress = 0
+    random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
+    # rolling_dice = 0
+    chosen_word = ''
+    # guild_count = 0
 
 class WandyWeatherBotClass:
     @staticmethod
     async def handle_weather(message):
-        print('{0.author} is importing weather')
+        print (' {0.author} is importing weather')
 def get_weather(city):
     try:
         base_url = ('http://api.weatherapi.com/v1/current.json?key=56f8d9680ef24b20883144842211004')
@@ -90,7 +94,7 @@ async def handle_answers(message):
 
 
 async def handle_help(message):
-    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in). For more information about each command, run the command wb Help link')
+    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in) , wb roll dice. For more information about each command, run the command wb Help link')
 
 
 async def handle_stickers_count(message):
@@ -119,34 +123,52 @@ async def handle_nick_answer(message):
 
 
 async def handle_play(message):
-    await message.channel.send('Unscramble the following word: ' + random.choice(WandyBotClass.play_words) + ' type in chat the answer and see if you were correct!')
+    WandyBotClass.chosen_word = random.choice(WandyBotClass.play_words)
+
+    await message.channel.send('Unscramble the following word: ' + WandyBotClass.chosen_word + ' type in chat the answer and see if you were correct!')
     WandyBotClass.playing_true = 1
 
 
 async def handle_playing_true(message):
-    if message.content.startswith('hello'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
-    
-    if message.content.startswith('play'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
-    
-    if message.content.startswith('sun'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
 
-    if message.content.startswith('pretty'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-    
-    elif message.content.startswith(''):
-        await message.channel.send('You were not correct :(')
-        
-        WandyBotClass.sticker_count += 1
+    if WandyBotClass.chosen_word == 'lheol':
+        if message.content.startswith('hello'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+        else:
+            await message.channel.send('You were not correct :(')
 
-    if message.content.startswith('cry'):
-        await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
-        WandyBotClass.sticker_count += 1
+    if WandyBotClass.chosen_word == 'lapy':
+        if message.content.startswith('play'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+
+        else:
+            await message.channel.send('You were not correct :(')
+
+    if WandyBotClass.chosen_word == 'nsu':
+        if message.content.startswith('sun'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+
+        else:
+            await message.channel.send('You were not correct :(')
+    
+    
+    if WandyBotClass.chosen_word == 'prttey':
+        if message.content.startswith('pretty'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+        else:
+            await message.channel.send('You were not correct :(')
+    
+    if WandyBotClass.chosen_word == 'ycr':
+        if message.content.startswith('cry'):
+            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            WandyBotClass.sticker_count += 1
+        else:
+            await message.channel.send('You were not correct :(')
+
     WandyBotClass.playing_true = 0
 
 
@@ -166,11 +188,18 @@ async def handle_notes(message):
 
 async def handle_notess(message):
     if message.content.startswith('***'):
-        await message.channel.send('Make sure wb notes works. wb nick bot needs debugging. wb play needs debugging (when it is supposed to tell you if the answer is incorrect does not work very well). wb Help link does not work like its supposed to yet.')
+        await message.channel.send('wb nick bot needs debugging. wb Help link does not work like its supposed to yet.')
     else:
         await message.channel.send('Your password is incorrect')
     WandyBotClass.user_admin_in_progress = 0
 
+async def handle_roll_dice(message):
+    await message.channel.send('Rolling the dice...')
+    await message.channel.send('The result was: ' + random.choice(WandyBotClass.random_dice) + '')
+    
+
+async def handle_server_count(message):
+    await message.channel.send('Wandy84-Bot is in '+ (' {guild.count} ') + ' servers!')
 
 # async def handle_admin_accessing_true(message):
     # if message.content.startswith('wb notes'):
@@ -227,11 +256,11 @@ async def on_message(message):
     elif WandyBotClass.user_admin_in_progress == 1:
         await handle_notess(message)
 
-    # elif WandyBotClass.playing_true == 1:
-        # await handle_playing_true(message)
+    elif WandyBotClass.playing_true == 1:
+        await handle_playing_true(message)
 
-    # elif WandyBotClass.user_admin_accessing_true == 1:
-        # await handle_admin_accessing_true(message)
+    # elif WandyBotClass.rolling_dice == 1:
+    #     await handle_dice_roll_results(message)
 
     elif message.content.startswith('wb open letter'):
         await handle_open_letter(message)
@@ -271,6 +300,12 @@ async def on_message(message):
         city = message.content[slice(11, len(message.content))].lower()
         result = get_weather(city)
         await message.channel.send(embed=result)
+
+    elif message.content.startswith('wb roll dice'):
+        await handle_roll_dice(message)
+
+    elif message.content.startswith('wb server count'):
+        await handle_server_count(message)
 
     elif message.content.startswith('wb'):
         await message.channel.send('Not a command')
