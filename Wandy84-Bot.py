@@ -183,8 +183,14 @@ async def handle_Ping(message):
 
 
 async def handle_notes(message):
-    await message.channel.send('To use this command, you must enter a password to proceed.')
+    if (message.author) == ('WanderingPanda84'):
+    
+        await message.channel.send('To use this command, you must enter a password to proceed.')
+    
+    else:
+        return
     WandyBotClass.user_admin_in_progress = 1
+
 
 async def handle_notess(message):
     if message.content.startswith('***'):
