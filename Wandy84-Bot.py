@@ -94,7 +94,7 @@ async def handle_answers(message):
 
 
 async def handle_help(message):
-    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in) , wb roll dice. For more information about each command, run the command wb Help link')
+    await message.channel.send('Commands list: wb help , wb Help link , wb hello , wb stickers , wb open letter , wb time , wb server stats , wb nick bot , wb play , Wandy84-Bot prefix , wb Ping! , wb weather (the city you want to see the weather in) , wb roll dice , wb server count. For more information about each command, run the command wb Help link')
 
 
 async def handle_stickers_count(message):
@@ -199,7 +199,7 @@ async def handle_roll_dice(message):
     
 
 async def handle_server_count(message):
-    await message.channel.send('Wandy84-Bot is in '+ (f' {client.guilds.count()} ') + ' servers!')
+    await message.channel.send('Wandy84-Bot is in '+ (f' {len(client.guilds)} ') + ' servers!')
         
 
 
