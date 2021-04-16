@@ -25,11 +25,12 @@ class WandyBotClass:
     random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
     # rolling_dice = 0
     chosen_word = ''
+    # guild_count = 0
 
 class WandyWeatherBotClass:
     @staticmethod
     async def handle_weather(message):
-        print('{0.author} is importing weather')
+        print (' {0.author} is importing weather')
 def get_weather(city):
     try:
         base_url = ('http://api.weatherapi.com/v1/current.json?key=56f8d9680ef24b20883144842211004')
@@ -187,7 +188,7 @@ async def handle_notes(message):
 
 async def handle_notess(message):
     if message.content.startswith('***'):
-        await message.channel.send('Make sure wb notes works. wb nick bot needs debugging. wb play needs debugging (when it is supposed to tell you if the answer is incorrect does not work very well). wb Help link does not work like its supposed to yet.')
+        await message.channel.send('wb nick bot needs debugging. wb Help link does not work like its supposed to yet.')
     else:
         await message.channel.send('Your password is incorrect')
     WandyBotClass.user_admin_in_progress = 0
@@ -195,24 +196,10 @@ async def handle_notess(message):
 async def handle_roll_dice(message):
     await message.channel.send('Rolling the dice...')
     await message.channel.send('The result was: ' + random.choice(WandyBotClass.random_dice) + '')
-    # WandyBotClass.rolling_dice = 1
+    
 
-# async def handle_dice_roll_results(message):
-#     WandyBotClass.rolling_dice = 0
-
-
-
-# async def handle_admin_accessing_true(message):
-    # if message.content.startswith('wb notes'):
-        # await message.channel.send('Okay! Here is your access to the command! (Please do not use this command if you dont have permission, or if you have nothing to do with the Wandy84-Bot team. Thank you.)')
-        # await message.channel.send('To use this ONE TIME access to admin commands, type the command, and if you have the access, the command should be accessable for you for ONE TIME. If you close the command, you will need a new access.')
-        # WandyBotClass.admin_access = 1
-
-# async def handle_admin_access(message):
-    # await message.channel.send('What admin command would you like to access? (type in chat the command of the command you would like to access). If you wish to cancel the command, type in chat cancel.')
-    # WandyBotClass.user_admin_accessing_true = 1
-    # if message.content.startswith('cancel'):
-        # return
+async def handle_server_count(message):
+    await message.channel.send('Wandy84-Bot is in '+ (f' {client.guilds.count()} ') + ' servers!')
         
 
 
@@ -305,6 +292,9 @@ async def on_message(message):
     elif message.content.startswith('wb roll dice'):
         await handle_roll_dice(message)
 
+    elif message.content.startswith('wb server count'):
+        await handle_server_count(message)
+
     elif message.content.startswith('wb'):
         await message.channel.send('Not a command')
 
@@ -316,4 +306,4 @@ async def on_message(message):
 
 
 
-client.run('ODE5ODExNTI0OTk0MTM4MTEy.YEsC-g.kLTuNwSh3Pdt1OFzBW6YOMDe8eE')
+client.run('ODE5ODExNTI0OTk0MTM4MTEy.YEsC-g.19S1tSyasO2Tq2tAaRnz4B9PQxU')
