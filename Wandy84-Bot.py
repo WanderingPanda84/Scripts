@@ -183,12 +183,12 @@ async def handle_Ping(message):
 
 
 async def handle_notes(message):
-    if (message.author) == ('WanderingPanda84'):
-    
+    print (message.author)
+    if (message.author) == ('WanderingPanda84#6414'):
         await message.channel.send('To use this command, you must enter a password to proceed.')
-    
+
     else:
-        return
+        await message.channel.send('Access denied.')
     WandyBotClass.user_admin_in_progress = 1
 
 
