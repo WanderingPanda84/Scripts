@@ -4,6 +4,7 @@ import subprocess
 import random
 import requests, json
 from datetime import date
+from bs4 import BeautifulSoup
 
 TOKEN = 'token'
 
@@ -65,6 +66,7 @@ def get_weather(city):
 
 @client.event
 async def on_ready():
+    await client.change_presence(status=discord.Status.online, activity=discord.Game('Duolingo Lesson (Spanish or Vanish!!)'))
     print('We have logged in as {0.user}'.format(client))
 
 @client.event
@@ -74,14 +76,15 @@ async def handle_help(message):
     embed.add_field(name="wb hello", value="Says hello", inline=True)
     embed.add_field(name="wb stickers", value="Your sticker count", inline=True)
     embed.add_field(name="wb open letter", value="If given a letter, opens it", inline=True)
-    embed.add_field(name="wb time", value="Shows local time", inline=True)
+    embed.add_field(name="wb date", value="Shows (local) date", inline=True)
     embed.add_field(name="wb server stats", value="Shows this servers' stats", inline=True)
     embed.add_field(name="wb play", value="Play a game!", inline=True)
     embed.add_field(name="Wandy84-Bot prefix", value="Shows this bots' prefix", inline=True)
     embed.add_field(name="wb ping", value="Pong!", inline=True)
     embed.add_field(name="wb weather (city)", value="Shows weather in given city", inline=True)
     embed.add_field(name="wb roll a die", value="Rolls a die", inline=True)
-    embed.add_field(name="wb server count", value="Shows number of members in this server", inline=True)
+    embed.add_field(name="wb server count", value="Shows the number of servers Wandy is in", inline=True)
+    embed.add_field(name="wb wikipedia (add a topic, otherwise a random topic will be chosen)", value="Displays random wikipedia page", inline=True)
 
     await message.channel.send(embed=embed)
 
@@ -92,9 +95,9 @@ async def handle_ping(message):
 
 async def handle_hello(message):
     embed=discord.Embed(title="Hello!", description="How are you feeling?", color=0x7272f0)
-    embed.add_field(name="1", value="Okay", inline=True)
+    embed.add_field(name="1", value="Great", inline=True)
     embed.add_field(name="2", value="Sad", inline=True)
-    embed.add_field(name="3", value="Normal", inline=True)
+    embed.add_field(name="3", value="Okay", inline=True)
     embed.set_footer(text="Type in a number")
 
     await message.channel.send(embed=embed)
@@ -114,7 +117,7 @@ async def handle_open_letter(message):
 
 async def handle_answers(message):
     if message.content.startswith('1'):
-        embed=discord.Embed(title="Okay is better than nothing!", description='Here, have a sticker: :' + random.choice(WandyBotClass.good_emojis) + ':', color=0x7272f0)
+        embed=discord.Embed(title="Yay!", description='Here, have a sticker: :' + random.choice(WandyBotClass.good_emojis) + ':', color=0x7272f0)
 
         await message.channel.send(embed=embed)
 
@@ -130,7 +133,7 @@ async def handle_answers(message):
         WandyBotClass.waiting_for_answer = 0
 
     if message.content.startswith('3'):
-        embed=discord.Embed(title="Good! I hope your normal is a good thing!", description='Here, have a sticker: :' + random.choice(WandyBotClass.good_emojis) + ':', color=0x7272f0)
+        embed=discord.Embed(title="Nice! I hope your normal is good!", description='Here, have a sticker: :' + random.choice(WandyBotClass.good_emojis) + ':', color=0x7272f0)
 
         await message.channel.send(embed=embed)
 
@@ -150,8 +153,6 @@ async def handle_play(message):
     embed.set_footer(text="Type the answer and see if you were correct!")
 
     await message.channel.send(embed=embed)
-
-    await message.channel.send('Unscramble the following word: ' + WandyBotClass.chosen_word + ' type in chat the answer and see if you were correct!')
     WandyBotClass.playing_true = 1
 
 
@@ -183,7 +184,9 @@ async def handle_playing_true(message):
 
     if WandyBotClass.chosen_word == 'nsu':
         if message.content.startswith('sun'):
-            await message.channel.send('You were correct! Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':')
+            embed=discord.Embed(title="You were correct!", description='Here, have a sticker! :'+ random.choice(WandyBotClass.good_emojis) + ':', color=0x7272f0)
+            
+            await message.channel.send(embed=embed)
             WandyBotClass.sticker_count += 1
         else:
             embed=discord.Embed(title="You weren't correct :(", color=0x7272f0)
@@ -235,7 +238,7 @@ async def handle_server_stats(message):
     await message.channel.send(embed=embed)
 
 
-async def handle_time(message):
+async def handle_date(message):
     today = date.today()
     embed=discord.Embed(title="Today's date: " + str(today), color=0x7272f0)
 
@@ -246,6 +249,65 @@ async def handle_prefix(message):
     embed=discord.Embed(title="The Wandy84-Bot prefix is wb. Type wb help for a command list.", color=0x7272f0)
 
     await message.channel.send(embed=embed)
+
+async def handle_wikipedia(message, topic=None):
+    if topic:
+        query = f"https://en.wikipedia.org/wiki/{topic.replace(' ', '_')}"
+        response = requests.get(query)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            title = soup.title.string
+            first_section = soup.find('div', {'class': 'mw-parser-output'}).find('p')
+            
+            text_content = ""
+            while first_section and first_section.name != 'h2':
+                text_content += first_section.get_text() + "\n"
+                first_section = first_section.find_next_sibling()
+            
+            image_url = None
+            infobox = soup.find('table', {'class': 'infobox'})
+            if infobox:
+                image_tag = infobox.find('img')
+                if image_tag:
+                    image_url = "https:" + image_tag['src']
+
+            embed = discord.Embed(title=title, description=text_content[:2000], color=0x7272f0)
+            if image_url:
+                embed.set_image(url=image_url)
+            embed.add_field(name="Open Wikipedia for more info", value="Some Wikipedia pages are older than others, so some topics may have errors or won't display correctly", inline=True)
+            await message.channel.send(embed=embed)
+            return
+        
+    query = "https://en.wikipedia.org/wiki/Special:Random"
+    response = requests.get(query)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        title = soup.title.string
+        first_section = soup.find('div', {'class': 'mw-parser-output'}).find('p')
+        
+        text_content = ""
+        while first_section and first_section.name != 'h2':
+            text_content += first_section.get_text() + "\n"
+            first_section = first_section.find_next_sibling()
+        
+        image_url = None
+        infobox = soup.find('table', {'class': 'infobox'})
+        if infobox:
+            image_tag = infobox.find('img')
+            if image_tag:
+                image_url = "https:" + image_tag['src']
+
+        embed = discord.Embed(title=title, description=text_content[:2000], color=0x7272f0)
+        if image_url:
+            embed.set_image(url=image_url)
+        embed.add_field(name="Open Wikipedia for more info", value="Some Wikipedia pages are older than others, so some topics may have errors or won't display correctly", inline=True)
+        await message.channel.send(embed=embed)
+    else:
+        embed = discord.Embed(title="Failed to fetch random Wikipedia article", color=0x7272f0)
+        await message.channel.send(embed=embed)
+
 
 
 @client.event
@@ -311,11 +373,19 @@ async def on_message(message):
         result = get_weather(city)
         await message.channel.send(embed=result)
     
-    elif message.content.startswith('wb time'):
-        await handle_time(message)
+    elif message.content.startswith('wb date'):
+        await handle_date(message)
 
     elif message.content.startswith('Wandy84-Bot prefix'):
         await handle_prefix(message)
+
+    elif message.content.startswith('wb wikipedia'):
+        parts = message.content.split(' ', 2)
+        
+        if len(parts) == 2:
+            await handle_wikipedia(message)
+        elif len(parts) == 3:
+            await handle_wikipedia(message, parts[2])
 
     elif message.content.startswith('wb'):
         embed=discord.Embed(title="Not a command, to see commands use wb help.", color=0x7272f0)
