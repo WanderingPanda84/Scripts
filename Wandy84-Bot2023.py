@@ -4,14 +4,38 @@ import subprocess
 import random
 import requests, json
 from datetime import date
+from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 import os
 
-TOKEN = os.environ['BOT_TOKEN']
+def firstload():
+    default_config = {
+        "bot_token": "",
+        "bot_prefix": "wb"
+    }
 
+    with open("config.json", "w") as config_file:
+        json.dump(default_config, config_file, indent=4)
+
+def config(key):
+    with open("config.json", "r") as config_file:
+        config_data = json.load(config_file)
+        return config_data.get(key)
+
+if not os.path.exists("config.json"):
+    firstload()
+
+if 'BOT_TOKEN' in os.environ:
+    TOKEN = os.environ['BOT_TOKEN']
+elif config("bot_token") is not None:
+    TOKEN = config("bot_token")
+else:
+    print("Unknown token. Please set the BOT_TOKEN environment variable or add it to config.json")
+    exit()
+prefix = config("bot_prefix")
 intents = discord.Intents().all()
 
-client = commands.Bot(command_prefix='wb', intents=intents)
+client = commands.Bot(command_prefix=config("bot_prefix"), intents=intents)
 
 class WandyBotClass:
     waiting_for_answer = 0
@@ -73,19 +97,19 @@ async def on_ready():
 @client.event
 async def handle_help(message):
     embed=discord.Embed(title="Commands", color=0x7272f0)
-    embed.add_field(name="wb help", value="Shows this list", inline=True)
-    embed.add_field(name="wb hello", value="Says hello", inline=True)
-    embed.add_field(name="wb stickers", value="Your sticker count", inline=True)
-    embed.add_field(name="wb open letter", value="If given a letter, opens it", inline=True)
-    embed.add_field(name="wb date", value="Shows (local) date", inline=True)
-    embed.add_field(name="wb server stats", value="Shows this servers' stats", inline=True)
-    embed.add_field(name="wb play", value="Play a game!", inline=True)
+    embed.add_field(name=f"{prefix} help", value="Shows this list", inline=True)
+    embed.add_field(name=f"{prefix} hello", value="Says hello", inline=True)
+    embed.add_field(name=f"{prefix} stickers", value="Your sticker count", inline=True)
+    embed.add_field(name=f"{prefix} open letter", value="If given a letter, opens it", inline=True)
+    embed.add_field(name=f"{prefix} date", value="Shows (local) date", inline=True)
+    embed.add_field(name=f"{prefix} server stats", value="Shows this servers' stats", inline=True)
+    embed.add_field(name=f"{prefix} play", value="Play a game!", inline=True)
     embed.add_field(name="Wandy84-Bot prefix", value="Shows this bots' prefix", inline=True)
-    embed.add_field(name="wb ping", value="Pong!", inline=True)
-    embed.add_field(name="wb weather (city)", value="Shows weather in given city", inline=True)
-    embed.add_field(name="wb roll a die", value="Rolls a die", inline=True)
-    embed.add_field(name="wb server count", value="Shows the number of servers Wandy is in", inline=True)
-    embed.add_field(name="wb wikipedia (add a topic, otherwise a random topic will be chosen)", value="Displays random wikipedia page", inline=True)
+    embed.add_field(name=f"{prefix} ping", value="Pong!", inline=True)
+    embed.add_field(name=f"{prefix} weather (city)", value="Shows weather in given city", inline=True)
+    embed.add_field(name=f"{prefix} roll a die", value="Rolls a die", inline=True)
+    embed.add_field(name=f"{prefix} server count", value="Shows the number of servers Wandy is in", inline=True)
+    embed.add_field(name=f"{prefix} wikipedia (add a topic, otherwise a random topic will be chosen)", value="Displays random wikipedia page", inline=True)
 
     await message.channel.send(embed=embed)
 
@@ -126,7 +150,7 @@ async def handle_answers(message):
         WandyBotClass.sticker_count += 1
 
     if message.content.startswith('2'):
-        embed=discord.Embed(title="Here, this will cheer you up.", description="(You have received a letter! open it with wb open letter)", color=0x7272f0)
+        embed=discord.Embed(title="Here, this will cheer you up.", description=f"(You have received a letter! open it with {prefix} open letter)", color=0x7272f0)
 
         await message.channel.send(embed=embed)
 
@@ -247,13 +271,13 @@ async def handle_date(message):
 
 
 async def handle_prefix(message):
-    embed=discord.Embed(title="The Wandy84-Bot prefix is wb. Type wb help for a command list.", color=0x7272f0)
+    embed=discord.Embed(title=f"The Wandy84-Bot prefix is {prefix}. Type {prefix} help for a command list.", color=0x7272f0)
 
     await message.channel.send(embed=embed)
 
 async def handle_wikipedia(message, topic=None):
     if topic:
-        query = f"https://en.wikipedia.org/wiki/{topic.replace(' ', '_')}"
+        query = "https://en.wikipedia.org/wiki/{topic.replace(' ', '_')}"
         response = requests.get(query)
         
         if response.status_code == 200:
@@ -273,10 +297,10 @@ async def handle_wikipedia(message, topic=None):
                 if image_tag:
                     image_url = "https:" + image_tag['src']
 
-            embed = discord.Embed(title=title, description=text_content[:2000], color=0x7272f0)
+            embed = discord.Embed(title=title, url=response.url, description=text_content[:2000], color=0x7272f0)
             if image_url:
                 embed.set_image(url=image_url)
-            embed.add_field(name="Open Wikipedia for more info", value="Some Wikipedia pages are older than others, so some topics may have errors or won't display correctly", inline=True)
+            embed.add_field(name=f"Open Wikipedia for more info", value="Some Wikipedia pages are older than others, so some topics may have errors or won't display correctly", inline=True)
             await message.channel.send(embed=embed)
             return
         
@@ -300,7 +324,7 @@ async def handle_wikipedia(message, topic=None):
             if image_tag:
                 image_url = "https:" + image_tag['src']
 
-        embed = discord.Embed(title=title, description=text_content[:2000], color=0x7272f0)
+        embed = discord.Embed(title=title, url=response.url, description=text_content[:2000], color=0x7272f0)
         if image_url:
             embed.set_image(url=image_url)
         embed.add_field(name="Open Wikipedia for more info", value="Some Wikipedia pages are older than others, so some topics may have errors or won't display correctly", inline=True)
@@ -318,7 +342,7 @@ async def on_member_join(member):
     print ('Recognised that a member called ' + member.name + ' joined')
     await channel.send('Welcome @' + member.name + ' to ' + member.guild.name + ' ! We hope you will enjoy your stay!')
     if member.name == ('{0.user}'):
-        await channel.send('Thank you for inviting Wandy84-Bot to your server! Wandy84-Bots prefix is wb. For a list of commands do wb help.')
+        await channel.send(f'Thank you for inviting Wandy84-Bot to your server! Wandy84-Bots prefix is {prefix}. For a list of commands do {prefix} help.')
 
 @client.event
 async def on_member_remove(member):
@@ -335,10 +359,10 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    elif message.content.startswith('wb help'):
+    elif message.content.startswith(f'{prefix} help'):
         await handle_help(message)
 
-    elif message.content.startswith('wb hello'):
+    elif message.content.startswith(f'{prefix} hello'):
         await handle_hello(message)
 
     elif WandyBotClass.waiting_for_answer == 1:
@@ -347,40 +371,40 @@ async def on_message(message):
     elif WandyBotClass.playing_true == 1:
         await handle_playing_true(message)
 
-    elif message.content.startswith('wb open letter'):
+    elif message.content.startswith(f'{prefix} open letter'):
         await handle_open_letter(message)
   
-    elif message.content.startswith('wb stickers'):
+    elif message.content.startswith(f'{prefix} stickers'):
         await handle_stickers_count(message)
 
-    elif message.content.startswith('wb ping'):
+    elif message.content.startswith(f'{prefix} ping'):
         await handle_ping(message)
 
-    elif message.content.startswith('wb play'):
+    elif message.content.startswith(f'{prefix} play'):
         await handle_play(message)
 
-    elif message.content.startswith('wb roll a die'):
+    elif message.content.startswith(f'{prefix} roll a die'):
         await handle_roll_dice(message)
 
-    elif message.content.startswith('wb server count'):
+    elif message.content.startswith(f'{prefix} server count'):
         await handle_server_count(message)
 
-    elif message.content.startswith('wb server stats'):
+    elif message.content.startswith(f'{prefix} server stats'):
         await handle_server_stats(message)
     
-    elif message.content.startswith('wb weather'):
+    elif message.content.startswith(f'{prefix} weather'):
         await WandyWeatherBotClass.handle_weather(message)
         city = message.content[slice(11, len(message.content))].lower()
         result = get_weather(city)
         await message.channel.send(embed=result)
     
-    elif message.content.startswith('wb date'):
+    elif message.content.startswith(f'{prefix} date'):
         await handle_date(message)
 
     elif message.content.startswith('Wandy84-Bot prefix'):
         await handle_prefix(message)
 
-    elif message.content.startswith('wb wikipedia'):
+    elif message.content.startswith(f'{prefix} wikipedia'):
         parts = message.content.split(' ', 2)
         
         if len(parts) == 2:
@@ -388,20 +412,26 @@ async def on_message(message):
         elif len(parts) == 3:
             await handle_wikipedia(message, parts[2])
 
-    elif message.content.startswith('wb'):
-        embed=discord.Embed(title="Not a command, to see commands use wb help.", color=0x7272f0)
+    elif message.content.startswith(prefix):
+        embed=discord.Embed(title=f"Not a command, to see commands use {prefix} help.", color=0x7272f0)
         await message.channel.send(embed=embed)
 
-    elif message.content.startswith('wB'):
-        embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        await message.channel.send(embed=embed)
+    #elif message.content.startswith('wB'):
+        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
+        #await message.channel.send(embed=embed)
 
-    elif message.content.startswith('WB'):
-        embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        await message.channel.send(embed=embed)
+    #elif message.content.startswith('WB'):
+        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
+        #await message.channel.send(embed=embed)
 
-    elif message.content.startswith('Wb'):
-        embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        await message.channel.send(embed=embed)
+    #elif message.content.startswith('Wb'):
+        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
+        #await message.channel.send(embed=embed)
+    #remove unnecessary case checks, just use .lower() on the message content
 
-client.run(TOKEN)
+try: 
+    client.run(TOKEN)
+except HTTPError as http_err:
+    print(f"HTTP error occurred: {http_err}")
+except Exception as err:
+    print(f"Other error occurred: {err}")
