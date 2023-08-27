@@ -5,8 +5,9 @@ import random
 import requests, json
 from datetime import date
 from bs4 import BeautifulSoup
+import os
 
-TOKEN = 'token'
+TOKEN = os.environ['BOT_TOKEN']
 
 intents = discord.Intents().all()
 
