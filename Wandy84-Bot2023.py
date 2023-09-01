@@ -10,7 +10,7 @@ import os
 
 def firstload():
     default_config = {
-        "bot_token": "",
+        "bot_token": 'token',
         "bot_prefix": "wb"
     }
 
@@ -35,6 +35,40 @@ else:
 prefix = config("bot_prefix")
 intents = discord.Intents().all()
 
+
+def save_firstload():
+    default = {
+        "waiting_for_answer": 0,
+        "letter_received": 0,
+        "sticker_count": 0,
+        "good_emojis": ['heart', 'heart_decoration', 'heartbeat', 'smiley', 'slight_smile', 'sunglasses', 'heart_eyes', 'star_struck', 'innocent', 'partying_face'],
+        "channel_id": 857111956704198706,
+        "play_words": ['lheol', 'lapy', 'nsu', 'prttey', 'ycr'],
+        "playing_true": 0,
+        "random_dice": ['1', '2', '3', '4', '5', '6'],
+        "chosen_word": ''
+    }
+
+    with open("save.json", "w") as save_file:
+        json.dump(default, save_file, indent=4)
+
+if not os.path.exists("save.json"):
+    save_firstload()
+
+try:
+    with open("save.json") as save_file:
+        xp = json.load(save_file)
+except json.JSONDecodeError:
+    print("Error: Invalid JSON data in save.json. Initializing with default values.")
+    save_firstload()
+    with open("save.json") as save_file:
+        xp = json.load(save_file)
+
+def save_to_json():
+    with open("save.json", "w") as save_file:
+        json.dump(xp, save_file, indent=4)
+
+
 client = commands.Bot(command_prefix=config("bot_prefix"), intents=intents)
 
 class WandyBotClass:
@@ -52,7 +86,6 @@ class WandyBotClass:
     user_admin_in_progress = 0
     random_dice = ['1' , '2' , '3' , '4' , '5' , '6']
     chosen_word = ''
-
 
 class WandyWeatherBotClass:
     @staticmethod
@@ -109,7 +142,7 @@ async def handle_help(message):
     embed.add_field(name=f"{prefix} weather (city)", value="Shows weather in given city", inline=True)
     embed.add_field(name=f"{prefix} roll a die", value="Rolls a die", inline=True)
     embed.add_field(name=f"{prefix} server count", value="Shows the number of servers Wandy is in", inline=True)
-    embed.add_field(name=f"{prefix} wikipedia (add a topic, otherwise a random topic will be chosen)", value="Displays random wikipedia page", inline=True)
+    embed.add_field(name=f"{prefix} wikipedia (optional: add a topic)", value="Displays random wikipedia page or chosen topic", inline=True)
 
     await message.channel.send(embed=embed)
 
@@ -277,7 +310,7 @@ async def handle_prefix(message):
 
 async def handle_wikipedia(message, topic=None):
     if topic:
-        query = "https://en.wikipedia.org/wiki/{topic.replace(' ', '_')}"
+        query = f"https://en.wikipedia.org/wiki/{topic.replace(' ', '_')}"
         response = requests.get(query)
         
         if response.status_code == 200:
@@ -415,19 +448,6 @@ async def on_message(message):
     elif message.content.startswith(prefix):
         embed=discord.Embed(title=f"Not a command, to see commands use {prefix} help.", color=0x7272f0)
         await message.channel.send(embed=embed)
-
-    #elif message.content.startswith('wB'):
-        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        #await message.channel.send(embed=embed)
-
-    #elif message.content.startswith('WB'):
-        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        #await message.channel.send(embed=embed)
-
-    #elif message.content.startswith('Wb'):
-        #embed=discord.Embed(title="Please use wb in lowercase letters if you wish to start a command.", color=0x7272f0)
-        #await message.channel.send(embed=embed)
-    #remove unnecessary case checks, just use .lower() on the message content
 
 try: 
     client.run(TOKEN)
