@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Website</title>
+
+        <link rel="stylesheet" type="text/css" href="style.css"/> 
+    </head>
+
+    <body>
+        <div id="header">
+            <button onclick="scrollToTop()">Top</button>
+        </div>
+
+        <div id="calculator">
+            <br>
+            <form id="search-container">
+                <input type="text" name="query" placeholder="0" id="num-input" value="" disabled>
+            </form>
+            <div id="row1">
+                <button onclick="reset()">C</button>
+                <button>÷</button>
+                <button>•</button>
+                <button id="delete" onclick="Delete()">Delete</button>
+            </div>
+
+            <div id="row2">
+                <button id="num" onclick="WriteNum(7)" value="7">7</button>
+                <button id="num" onclick="WriteNum(8)" value="8">8</button>
+                <button id="num" onclick="WriteNum(9)" value="9">9</button>
+                <button>-</button>
+            </div>
+
+            <div id="row3">
+                <button id="num" onclick="WriteNum(4)" value="4">4</button>
+                <button id="num" onclick="WriteNum(5)" value="5">5</button>
+                <button id="num" onclick="WriteNum(6)" value="6">6</button>
+                <button id="add" onclick="AddNum()">+</button>
+            </div>
+
+            <div id="row4">
+                <button id="num" onclick="WriteNum(1)" value="1">1</button>
+                <button id="num" onclick="WriteNum(2)" value="2">2</button>
+                <button id="num" onclick="WriteNum(3)" value="3">3</button>
+                <button id="equals" onclick="Equals()">=</button>
+            </div>
+
+            <div id="row5">
+                <button id="decibel" onclick="Decibel()" value=".">.</button>
+                <button id="num" onclick="WriteNum(0)" value="0">0</button>
+            </div>
+            
+        </div>
+
+
+        <div id="footer">
+            <footer>All Rights Reserved To Someone and Mike©</footer>
+        </div>
+
+        <script>
+            function scrollToTop() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+
+            function reset() {
+                document.getElementById("num-input").value = "";
+            }
+
+            function WriteNum(int) {
+                var numValue = int;
+                var ElementToDisplay = document.getElementById("num-input");
+
+                if (ElementToDisplay.value == ElementToDisplay.placeholder) {
+                    ElementToDisplay.value = numValue;
+                    numValue = null;
+                } else {
+                    var newNum = numValue.toString();
+                    ElementToDisplay.value = ElementToDisplay.value + newNum;
+                    numValue = null;
+                    newNum = null;
+                }
+
+            }
+
+            function Decibel() {
+                var ElementToDisplay = document.getElementById("num-input");
+                var toDisplay = document.getElementById("decibel").value;
+
+                if (ElementToDisplay.value.includes(toDisplay)) {
+                    ElementToDisplay.value = ElementToDisplay.value;
+                    toDisplay = null;
+                } else {
+                    ElementToDisplay.value = ElementToDisplay.value + toDisplay;
+                    toDisplay = null;
+                }
+
+            }
+
+            function Delete() {
+                var ElementToDisplay = document.getElementById("num-input");
+
+                ElementToDisplay.value = ElementToDisplay.value.slice(0, -1);
+                lastNum = null;
+            }
+
+            var num1 = null;
+            var num2 = null;
+            var addedNums = null;
+
+            function AddNum() {
+                var ElementToDisplay = document.getElementById("num-input");
+                
+                if (num1 === null) {
+                    num1 = Number(ElementToDisplay.value);
+                    ElementToDisplay.value = "";
+                    return;
+                } else if (num1 !== null) {
+                    num2 = Number(ElementToDisplay.value);
+                    ElementToDisplay.value = "";
+                    addedNums = num1 + num2;
+                    num1 = null;
+                    num2 = null;
+                }
+
+            }
+
+            function Equals() {
+                var ElementToDisplay = document.getElementById("num-input");
+
+                if (addedNums !== null) {
+                    ElementToDisplay.value = addedNums;
+                    addedNums = null;
+                }
+            }
+
+        </script>
+    </body>
+
+</html>
